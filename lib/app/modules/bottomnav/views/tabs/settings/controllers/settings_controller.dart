@@ -7,7 +7,7 @@ import 'package:wallet/app/modules/bottomnav/views/tabs/profile/controllers/prof
 import 'package:wallet/utils/SnackBarUtils.dart';
 import 'package:wallet/utils/easy_loading.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart' as dio_lib;
 import 'package:get/get.dart' hide Response, FormData, MultipartFile, MediaType;
 
 class SettingsController extends GetxController {
@@ -53,7 +53,7 @@ class SettingsController extends GetxController {
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message']);
-    } on dio.DioError catch (error) {
+    } on dio_lib.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
@@ -77,7 +77,7 @@ class SettingsController extends GetxController {
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message'][0]);
-    } on dio.DioError catch (error) {
+    } on dio_lib.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
@@ -101,17 +101,17 @@ class SettingsController extends GetxController {
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message']);
-    } on dio.DioError catch (error) {
+    } on dio_lib.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
 
   Future<dynamic> uploadImage(File file, String url, dynamic data) async {
-    final dioObject = dio.Dio();
+    final dioObject = dio_lib.Dio();
     String fileName = file.path.split('/').last;
-    dio.FormData formData = dio.FormData.fromMap({
+    dio_lib.FormData formData = dio_lib.FormData.fromMap({
       "screenshot":
-          await dio.MultipartFile.fromFile(file.path, filename: fileName),
+          await dio_lib.MultipartFile.fromFile(file.path, filename: fileName),
       "amount": data['amount'],
       "reference": data['reference'],
     });
@@ -119,7 +119,7 @@ class SettingsController extends GetxController {
     final response = await dioObject.post(
       url,
       data: formData,
-      options: dio.Options(headers: {
+      options: dio_lib.Options(headers: {
         "Content-type": "multipart/form-data",
         "Accept": "application/json",
         "Authorization": "Bearer $token",
