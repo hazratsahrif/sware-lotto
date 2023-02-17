@@ -7,20 +7,21 @@ import 'package:wallet/app/modules/bottomnav/views/tabs/profile/controllers/prof
 import 'package:wallet/utils/SnackBarUtils.dart';
 import 'package:wallet/utils/easy_loading.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart' hide Response, FormData, MultipartFile;
-import 'package:get/get.dart' hide Response, FormData, MultipartFile,MediaType;
+import 'package:dio/dio.dart' as dio;
+import 'package:get/get.dart' hide Response, FormData, MultipartFile, MediaType;
 
 class SettingsController extends GetxController {
   //TODO: Implement SettingsController
   final profileController = ProfileController.instance;
-  String? token="";
-  RxString? depositImage ="".obs;
+  String? token = "";
+  RxString? depositImage = "".obs;
 
   final count = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
-    token= profileController.token;
+    token = profileController.token;
     profileController.img.value.name != null;
   }
 
@@ -35,33 +36,30 @@ class SettingsController extends GetxController {
   }
 
   /// Add referal code Api Call
-  void addReferalApiResponse(dynamic data,String url) async {
+  void addReferalApiResponse(dynamic data, String url) async {
     print(data);
     print(token);
-
 
     try {
       Loading().showEasyLoading("loading...");
       final response = await http.post(Uri.parse(url),
-
-          headers:
-          {
+          headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': 'Bearer $token',
           },
-          body: jsonEncode(data)
-      );
+          body: jsonEncode(data));
       print((response.body));
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message']);
-    } on DioError catch (error) {
+    } on dio.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
+
   /// Add referal code Api Call
-  Future depositApiResponse(dynamic data,String url) async {
+  Future depositApiResponse(dynamic data, String url) async {
     print(data);
     print(token);
     print(url);
@@ -69,27 +67,23 @@ class SettingsController extends GetxController {
     try {
       Loading().easyLoadingSuccess();
       final response = await http.post(Uri.parse(url),
-
-          headers:
-          {
+          headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': 'Bearer $token',
           },
-          body: jsonEncode(data)
-      );
+          body: jsonEncode(data));
       print(response.body);
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message'][0]);
-    } on DioError catch (error) {
+    } on dio.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
 
   /// withdraw code Api Call
-  Future withDrawApiResponse(dynamic data,String url) async {
-
+  Future withDrawApiResponse(dynamic data, String url) async {
     print(data);
     print(token);
     print(url);
@@ -97,73 +91,89 @@ class SettingsController extends GetxController {
       Loading().showEasyLoading("loading...");
 
       final response = await http.post(Uri.parse(url),
-          headers:
-          {
+          headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': 'Bearer $token',
           },
-          body: jsonEncode(data)
-      );
+          body: jsonEncode(data));
       print(response.body);
       var jsonResponse = json.decode(response.body);
       Loading().dismissEasyLoading();
       SnackBarUtils.showSnackBar(jsonResponse['message']);
-    } on DioError catch (error) {
+    } on dio.DioError catch (error) {
       print("nani kore ? : " + error.toString());
     }
   }
 
-  /// Deposit media api
-  Future submitSubscription(dynamic data, String url)async {
-    ///MultiPart request
-    print(data.toString());
-    dynamic responseJson;
-    var res;
-    String respStr = "screenshot";
-    try {
-      Loading().showEasyLoading("loading...");
-      var response = http.MultipartRequest("POST", Uri.parse(url));
-      print(data["screenshot"]);
-
-      File file = File(data["screenshot"]);
-      var length = await file.length();
-      print(file.path);
-      var stream = new http.ByteStream(file.openRead());
-      print(file.path);
-      var multiform = new http.MultipartFile(
-          'file',
-          stream,
-          length,
-          filename: file.path,
-        contentType: new MediaType('image', 'jpg')
-      );
-      response.files.add(multiform);
-      response.headers.addAll({
+  Future<dynamic> uploadImage(File file, String url, dynamic data) async {
+    final dioObject = dio.Dio();
+    String fileName = file.path.split('/').last;
+    dio.FormData formData = dio.FormData.fromMap({
+      "screenshot":
+          await dio.MultipartFile.fromFile(file.path, filename: fileName),
+      "amount": data['amount'],
+      "reference": data['reference'],
+    });
+    print('Loading...');
+    final response = await dioObject.post(
+      url,
+      data: formData,
+      options: dio.Options(headers: {
         "Content-type": "multipart/form-data",
         "Accept": "application/json",
         "Authorization": "Bearer $token",
+      }),
+    );
+    print(response);
+    return response.data;
+  }
 
+  /// Deposit media api
+  Future submitSubscription(dynamic data, String url) async {
+    ///MultiPart request
+    print(data.toString());
+    print('submitSubscription');
+    print('data["screenshot"]: ${data["screenshot"]}');
+    dynamic responseJson;
+    var res;
+    String respStr = "screenshot";
 
-      });
-      response.fields.addAll({
-        "amount":data['amount'],
-        "reference":data['reference'],
-        "screenshot":data["screenshot"],
-      });
-      res = await response.send();
-      respStr = await res.stream.bytesToString();
-      print("resposne");
-      print(res.statusCode);
-      print(res.request?.headers);
-      print(respStr);
+    try {
+      Loading().showEasyLoading("loading...");
+      final response = await uploadImage(File(data["screenshot"]), url, data);
+      print('Response: ${response}');
       Loading().easyLoadingSuccess();
+      return response;
+      // var response = http.MultipartRequest("POST", Uri.parse(url));
+      // print(data["screenshot"]);
+      //
+      // File file = File(data["screenshot"]);
+      // var length = await file.length();
+      // print(file.path);
+      // var stream = new http.ByteStream(file.openRead());
+      // print(file.path);
+      // var multiform = new http.MultipartFile('file', stream, length,
+      //     filename: file.path, contentType: new MediaType('image', 'jpg'));
+      // response.files.add(multiform);
+      // response.headers.addAll({
+      //   "Content-type": "multipart/form-data",
+      //   "Accept": "application/json",
+      //   "Authorization": "Bearer $token",
+      // });
+      // response.fields.addAll({
+      //   "amount": data['amount'],
+      //   "reference": data['reference'],
+      //   "screenshot": data["screenshot"],
+      // });
+      // res = await response.send();
+      // respStr = await res.stream.bytesToString();
+      // print("resposne");
+      // print(res.statusCode);
+      // print(res.request?.headers);
+      // print(respStr);
     } on SocketException {
       throw ('No Internet Connection');
     }
-
-
-
   }
-
 }

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallet/api/data/network/BaseApiServices.dart';
+
 class NetworkApiService extends BaseApiServices {
   // final token = GetStorage();
 
@@ -22,9 +23,9 @@ class NetworkApiService extends BaseApiServices {
     print(url);
     http.Response response;
     try {
-       response = await http.post(Uri.parse(url), body: data).timeout(
-        const Duration(seconds: 15),
-      );
+      response = await http.post(Uri.parse(url), body: data).timeout(
+            const Duration(seconds: 15),
+          );
       print(response.body);
     } on SocketException {
       throw 'Something went wrong';
@@ -39,8 +40,8 @@ class NetworkApiService extends BaseApiServices {
     http.Response response;
     try {
       response = await http.post(Uri.parse(url), body: data).timeout(
-        const Duration(seconds: 10),
-      );
+            const Duration(seconds: 30),
+          );
       print(response.body);
     } on SocketException {
       throw 'No Internet Connection';
@@ -54,8 +55,8 @@ class NetworkApiService extends BaseApiServices {
     dynamic response;
     try {
       response = await http.post(Uri.parse(url), body: data).timeout(
-        const Duration(seconds: 20),
-      );
+            const Duration(seconds: 20),
+          );
       print("hazrat");
       print(response.body);
     } on SocketException {
@@ -63,7 +64,4 @@ class NetworkApiService extends BaseApiServices {
     }
     return response.body;
   }
-
-
-
 }
