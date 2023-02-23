@@ -60,7 +60,7 @@ class ChangepasswordView extends GetView<SignupController> {
                           title: "Current Password",
                           suffixIcon: null,
                           controller: currentController,
-                          textInputType: TextInputType.number,
+                          textInputType: TextInputType.text,
 
                         ),
                         ProfileTextField(
@@ -86,17 +86,20 @@ class ChangepasswordView extends GetView<SignupController> {
                 PrimaryButton(title: "Update",onTab: (){
 
                   if(
-                       currentController.text.isNotEmpty ||
-                      newController.text.isNotEmpty ||
-                      confirmController.text.isNotEmpty
+
+                      newController.text.isNotEmpty &&
+                      confirmController.text.isNotEmpty &&
+                      currentController.text.isNotEmpty
                   ){
                     Map data ={
-
-                      "old_password": currentController.text,
+                       "old_password": currentController.text,
                       "password":newController.text,
                       "password_confirmation":confirmController.text
                     };
-                    controller.changePasswordApiResponse(data,ApiUrl.changePasswordEndPoint);
+                    controller.changePasswordApiResponse(data,"https://swer3lotto.com/api/user/change/password");
+                    newController.text='';
+                    confirmController.text='';
+                    currentController.text='';
 
                   }
                   else{

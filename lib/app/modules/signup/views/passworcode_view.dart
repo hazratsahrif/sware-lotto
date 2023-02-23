@@ -13,8 +13,11 @@ class PassworcodeView extends GetView {
    PassworcodeView({Key? key}) : super(key: key);
   TextEditingController codeController= TextEditingController();
    SignupController controller = Get.put(SignupController());
+   bool isForgotPasswword = Get.arguments;
   @override
   Widget build(BuildContext context) {
+    print(isForgotPasswword);
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColor.background,
@@ -25,9 +28,7 @@ class PassworcodeView extends GetView {
                 margin: EdgeInsets.only(right: 12),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height*0.2,
-
                 child: SvgPicture.asset("assets/Circle.svg",color: MyColor.yellow,
-
                   fit: BoxFit.fill,
                 )),
 
@@ -41,18 +42,36 @@ class PassworcodeView extends GetView {
             Spacer(),
             Center(
               child:   MaterialButton(onPressed: (){
+                if(isForgotPasswword){
+                  if(codeController.text.isNotEmpty){
+                    Map data=
+                    {
+                      "code":codeController.text
+                    };
+                    controller.postVerifyPassCode(data, ApiUrl.verificationEndPoint);
+                    codeController.text='';
+
+                  }
+                  else{
+                    SnackBarUtils.showError("Please fill the field!");
+                  }
+                }
+                else{
+
+
                 if(codeController.text.isNotEmpty){
                   Map data=
                   {
                     "code":codeController.text
                   };
                   controller.postVerifyUser(data);
+                  codeController.text='';
 
                 }
                 else{
-                  SnackBarUtils.showError("Please fill all the field!");
+                  SnackBarUtils.showError("Please fill the field!");
                 }
-
+                }
               }, child: Icon(Icons.arrow_forward_rounded,size: 30, color: Colors.white,),
                 color: MyColor.yellow,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),

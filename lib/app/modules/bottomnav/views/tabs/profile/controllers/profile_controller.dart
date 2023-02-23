@@ -22,20 +22,24 @@ class ProfileController extends GetxController {
   String nick_name = "";
   Rx<UserGetModel>  userModel = new UserGetModel().obs;
   String image="";
-  Rx<Users>  userData = new Users().obs;
+  Rx<Users>?  userData = new Users().obs;
   Rx<XFile> img = XFile('').obs;
   Rx<XFile> depositImage = XFile('').obs;
   Rx<ImagePicker> picker = ImagePicker().obs;
+  String trimImage = '';
+  String userName = '';
 
   @override
   void onInit() async{
     super.onInit();
     print("init call");
-    print(userData.value.image.toString().replaceAll(RegExp(r'\\'),""));
+
+
     token = await storage.read(key: "token");
     if(token!.isNotEmpty){
       print(token);
       getUserData();
+
     }
   }
 
@@ -78,8 +82,13 @@ class ProfileController extends GetxController {
           var responseData = json.decode(response.body);
 
           userModel.value =  UserGetModel.fromJson(responseData);
-          userData.value = userModel.value.users!;
-          print(userData.value.nickName);
+          userData!.value = userModel.value.users!;
+          if(userData!.value.image!=''){
+            userName=userData!.value.nickName!;
+            trimImage = userData!.value.image.toString().replaceAll(RegExp(r'\\'),"");
+            print(userData!.value.image.toString().replaceAll(RegExp(r'\\'),""));
+          }
+          print(userData!.value.nickName);
         }
       } on SocketException {
         throw 'Something went wrong';
@@ -87,77 +96,87 @@ class ProfileController extends GetxController {
       return response.body;
     }
   Future updateUserData(dynamic data,String url) async {
-    // print(data);
-    // print(token);
-    // final msg = jsonEncode(data);
-    // try {
-    //   Loading().easyLoadingSuccess();
-    //   http.Response response = await http.post(Uri.parse(url),
-    //       headers:
-    //       {
-    //         'Content-Type': 'application/json',
-    //         'Accept': 'application/json',
-    //         'Authorization': 'Bearer $token',
-    //       },
-    //       body: msg
-    //   );
-    //   print((response.body));
-    //   Loading().dismissEasyLoading();
-    //   var jsonResponse = json.decode(response.body);
-    //   onInit();
-    //   SnackBarUtils.showSnackBar(jsonResponse['message'][0]);
-    // } on DioError catch (error) {
-    //   print("nani kore ? : " + error.toString());
-    // }
-    print(data['screenshot']);
-    dynamic responseJson;
-    var res;
-    String respStr = "screenshot";
-    try {
-      Loading().showEasyLoading("loading...");
-      var response = http.MultipartRequest("POST", Uri.parse(url));
-      print(data["image"]);
 
-      File file = File(data["image"]);
-      var length = await file.length();
-      print(file.path);
-      var stream = new http.ByteStream(file.openRead());
-      print("file"+file.path);
-      var multiform = new http.MultipartFile(
-          'image',
-          stream,
-          length,
-          filename: file.path
-      );
 
-      response.files.add(multiform);
-      response.headers.addAll({
-        "Content-type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer ${token}",
-      });
-      response.fields.addAll({
-        "bio":data['bio'],
-        "image":data['image'],
-        "dob":data['dob'],
-        "nick_name":data['nick_name'],
-      });
+    if(data['image'].toString().isEmpty){
+      print(data);
+      print(token);
+      final msg = jsonEncode(data);
+      try {
+        Loading().easyLoadingSuccess();
+        http.Response response = await http.post(Uri.parse(url),
+            headers:
+            {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: msg
+        );
+        print((response.body));
+        Loading().dismissEasyLoading();
+        var jsonResponse = json.decode(response.body);
+        onInit();
+        SnackBarUtils.showSnackBar(jsonResponse['message'][0]);
+      } on DioError catch (error) {
+        print("nani kore ? : " + error.toString());
+      }
 
-      res = await response.send();
-      respStr = await res.stream.bytesToString();
-      print("resposne");
-      print(res.statusCode);
 
-      print(res.request?.headers);
-      print(respStr);
-      onInit();
-      Loading().easyLoadingSuccess();
-    } on SocketException {
-      throw ('No Internet Connection');
+    }
+    else{
+
+      dynamic responseJson;
+      var res;
+      String respStr = "screenshot";
+      try {
+        Loading().showEasyLoading("loading...");
+        var response = http.MultipartRequest("POST", Uri.parse(url));
+        print(data["image"]);
+
+        File file = File(data["image"]);
+        var length = await file.length();
+        print(file.path);
+        var stream = new http.ByteStream(file.openRead());
+        print("file"+file.path);
+        var multiform = new http.MultipartFile(
+            'image',
+            stream,
+            length,
+            filename: file.path
+        );
+
+        response.files.add(multiform);
+        response.headers.addAll({
+          "Content-type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer ${token}",
+        });
+        response.fields.addAll({
+          "bio":data['bio'],
+          "image":data['image'],
+          "dob":data['dob'],
+          "nick_name":data['nick_name'],
+        });
+
+        res = await response.send();
+        respStr = await res.stream.bytesToString();
+        print("resposne");
+        print(res.statusCode);
+
+        print(res.request?.headers);
+        print(respStr);
+        onInit();
+        Loading().easyLoadingSuccess();
+      } on SocketException {
+        throw ('No Internet Connection');
+      }
+
+
+      return responseJson;
     }
 
 
-    return responseJson;
 
   }
 }

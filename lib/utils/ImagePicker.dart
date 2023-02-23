@@ -9,6 +9,7 @@ class PickImage{
     // Pick an image
     img = (await picker.pickImage(
       source: ImageSource.gallery,
+      imageQuality: 1024
     ))!;
     if (img.name != null) {
       print(img.path);

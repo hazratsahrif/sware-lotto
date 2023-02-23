@@ -6,6 +6,8 @@ import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/addrefera
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/changepassword_view.dart';
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/deposit_view.dart';
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/referfriend_view.dart';
+import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/show_deposit_view.dart';
+import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/with_darw_history_view.dart';
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/withdrawl_view.dart';
 import 'package:wallet/app/routes/app_pages.dart';
 import 'package:wallet/constant/colors.dart';
@@ -24,8 +26,8 @@ class SettingsView extends GetView<SettingsController> {
     "About Us"
   ];
   List<Callback> callback =[
-    ()=>Get.to(DepositView()),
-    ()=>Get.to(WithdrawlView()),
+    ()=>Get.to(ShowDepositView()),
+    ()=>Get.to(WithDarwHistoryView()),
     ()=>Get.to(ReferfriendView()),
     ()=>Get.to(AddreferalcodeView()),
     ()=>Get.to(ChangepasswordView()),

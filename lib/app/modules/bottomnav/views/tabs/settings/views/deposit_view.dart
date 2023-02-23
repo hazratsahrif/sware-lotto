@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cross_file/src/types/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/controllers/settings_controller.dart';
 import 'package:wallet/constant/api_url.dart';
 import 'package:wallet/utils/SnackBarUtils.dart';
@@ -18,8 +20,8 @@ class DepositView extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    print("sadia");
     print(controller.depositImage!);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -121,12 +123,11 @@ class DepositView extends GetView<SettingsController> {
                             fontWeight: FontWeight.w500
 
                         ),),
-                        IconButton(onPressed: () async{
+                        IconButton(onPressed: () async {
                           await controller.profileController.getFromGallery();
                           print(controller.profileController.img.value.path);
-                          controller.depositImage!.value=controller.profileController.img.value.path;
+                          controller.depositImage!.value = controller.profileController.img.value.path;
 
-                          print("hazrat"+controller.depositImage!.value!);
                         }, icon: Icon(Icons.add_a_photo, color: Colors.blue,)),
                       ],
                     ) :
@@ -139,19 +140,42 @@ class DepositView extends GetView<SettingsController> {
               SizedBox(
                 height: 20,
               ),
-              Text("Send Gcash here: 09771656939",
+              Obx(() {
+                return Text(
+                  "Send Gcash here:\n\n${"Name : "}${controller.gCashResponse.value.account!.name ?? ""}",
 
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500
-                ),
-              ),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500
+                  ),
+                );
+              }),
+              Obx(() {
+                return Row(
+                  children: [
+                    Text(
+                      "Number : ${controller.gCashResponse.value.account!.number ?? ""}",
+
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500
+                      ),
+                    ),
+                    IconButton(onPressed: (){
+                      Clipboard.setData(new ClipboardData(text: controller.gCashResponse.value.account!.number)).then((_){
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text('Copied ${controller.gCashResponse.value.account!.number}')));
+                      });
+                    }, icon: Icon(Icons.copy,size: 18,))
+                  ],
+                );
+              }),
 
               SizedBox(
                 height: MediaQuery
                     .of(context)
                     .size
-                    .height * 0.06,
+                    .height * 0.03,
               ),
 
               PrimaryButton(
@@ -160,7 +184,6 @@ class DepositView extends GetView<SettingsController> {
                   if (controller.profileController.img.value.name.isEmpty) {
                     SnackBarUtils.showError("Please attach screenshot!");
                   }
-
                   if (nameController.text.isNotEmpty ||
                       amountController.text.isNotEmpty ||
                       referenceController.text.isNotEmpty) {
@@ -169,7 +192,11 @@ class DepositView extends GetView<SettingsController> {
                       "reference": referenceController.text,
                       "screenshot": controller.depositImage!.value,
                     };
-                    await controller.submitSubscription(data, ApiUrl.userDepositEndPoint);
+                    await controller.submitSubscription(
+                        data, ApiUrl.userDepositEndPoint);
+                    amountController.text ='';
+                    referenceController.text='';
+                   controller.depositImage!.value='';
                   } else {
                     SnackBarUtils.showError("Please fill all the field!");
                   }

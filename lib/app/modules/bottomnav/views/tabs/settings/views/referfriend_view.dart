@@ -6,6 +6,10 @@ import 'package:wallet/app/modules/bottomnav/views/tabs/settings/controllers/set
 import 'package:wallet/constant/colors.dart';
 import 'package:wallet/widgets/PrimaryButton.dart';
 
+import 'package:share_plus/share_plus.dart';
+
+
+
 class ReferfriendView extends GetView<SettingsController> {
    ReferfriendView({Key? key}) : super(key: key);
   final controller = Get.put(SettingsController());
@@ -47,7 +51,7 @@ class ReferfriendView extends GetView<SettingsController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          controller.profileController.userData.value.referralCode!,
+                          controller.profileController.userData!.value.referralCode!,
                           style: TextStyle(
                               color: MyColor.yellow,
                               fontWeight: FontWeight.bold,
@@ -57,7 +61,7 @@ class ReferfriendView extends GetView<SettingsController> {
                           onPressed: () {
                             Clipboard.setData(ClipboardData(
                                 text: controller.profileController.userData
-                                    .value.referralCode!));
+                                    !.value.referralCode!));
                           },
 
                           style: ButtonStyle(
@@ -76,7 +80,12 @@ class ReferfriendView extends GetView<SettingsController> {
                   ),
                 ),
                 Spacer(),
-                PrimaryButton(title: "Invite", onTab: (){}),
+                PrimaryButton(title: "Invite", onTab: () {
+                  print("click");
+                  onShare(context,controller.profileController.userData!.value.referralCode!);
+
+
+                }),
                 Spacer(),
                 Center(
                   child: Text(
@@ -118,4 +127,15 @@ class ReferfriendView extends GetView<SettingsController> {
       ),
     );
   }
+   void onShare(BuildContext context,String text) async {
+     final box = context.findRenderObject() as RenderBox?;
+
+     // subject is optional but it will be used
+     // only when sharing content over email
+     await Share.share(text,
+         subject: "",
+         sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size);
+   }
+
+
 }

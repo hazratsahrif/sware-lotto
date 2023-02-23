@@ -38,7 +38,8 @@ class Users {
       this.updatedAt, 
       this.bio, 
       this.dob, 
-      this.image, 
+      this.image,
+      this.isReferer,
       this.referralCode,});
 
   Users.fromJson(dynamic json) {
@@ -54,6 +55,7 @@ class Users {
     bio = json['bio'];
     dob = json['dob'];
     image = json['image'];
+    isReferer = json['isReferer'];
     referralCode = json['referral_code'];
   }
   int? id;
@@ -68,6 +70,7 @@ class Users {
   dynamic bio;
   dynamic dob;
   dynamic image;
+  int? isReferer;
   String? referralCode;
 Users copyWith({  int? id,
   String? nickName,
@@ -81,6 +84,7 @@ Users copyWith({  int? id,
   dynamic bio,
   dynamic dob,
   dynamic image,
+  int? isReferer,
   String? referralCode,
 }) => Users(  id: id ?? this.id,
   nickName: nickName ?? this.nickName,
@@ -94,6 +98,8 @@ Users copyWith({  int? id,
   bio: bio ?? this.bio,
   dob: dob ?? this.dob,
   image: image ?? this.image,
+   isReferer: isReferer ?? this.isReferer,
+
   referralCode: referralCode ?? this.referralCode,
 );
   Map<String, dynamic> toJson() {
@@ -110,6 +116,7 @@ Users copyWith({  int? id,
     map['bio'] = bio;
     map['dob'] = dob;
     map['image'] = image;
+    map['isReferer'] = isReferer;
     map['referral_code'] = referralCode;
     return map;
   }

@@ -6,12 +6,11 @@ import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/referfrie
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/views/withdrawl_view.dart';
 import 'package:wallet/app/modules/signup/views/passworcode_view.dart';
 import 'package:wallet/app/modules/signup/views/passwordemail_view.dart';
-
+import 'package:wallet/app/modules/signup/views/splach_screen_view.dart';
 import '../modules/bottomnav/bindings/bottomnav_binding.dart';
 import '../modules/bottomnav/views/bottomnav_view.dart';
 import '../modules/bottomnav/views/tabs/dashboard/bindings/dashboard_binding.dart';
 import '../modules/bottomnav/views/tabs/dashboard/views/dashboard_view.dart';
-import '../modules/bottomnav/views/tabs/history/bindings/history_binding.dart';
 import '../modules/bottomnav/views/tabs/history/views/history_view.dart';
 import '../modules/bottomnav/views/tabs/profile/bindings/profile_binding.dart';
 import '../modules/bottomnav/views/tabs/profile/views/profile_view.dart';
@@ -29,7 +28,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
     GetPage(
@@ -53,6 +52,11 @@ class AppPages {
       binding: SignupBinding(),
     ),
     GetPage(
+      name: _Paths.SPLASH,
+      page: () =>  SplachScreenView(),
+      binding: SignupBinding(),
+    ),
+    GetPage(
       name: _Paths.BOTTOMNAV,
       page: () =>  BottomnavView(),
       binding: BottomnavBinding(),
@@ -64,8 +68,8 @@ class AppPages {
         ),
         GetPage(
           name: _Paths.HISTORY,
-          page: () => const HistoryView(),
-          binding: HistoryBinding(),
+          page: () =>  HistoryView(),
+          binding: DashboardBinding(),
         ),
         GetPage(
           name: _Paths.SETTINGS,
@@ -113,6 +117,7 @@ class AppPages {
           name: _Paths.PASSWORDCODE,
           page: () =>  PassworcodeView(),
         ),
+
       ],
     ),
   ];

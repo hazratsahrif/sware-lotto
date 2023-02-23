@@ -19,6 +19,7 @@ abstract class Routes {
   static const DEPOSIT = _Paths.DEPOSIT;
   static const PASSWORDCODE = _Paths.PASSWORDCODE;
   static const PASSWORDEMAIL = _Paths.PASSWORDEMAIL;
+  static const SPLASH = _Paths.SPLASH;
 }
 
 abstract class _Paths {
@@ -40,4 +41,5 @@ abstract class _Paths {
   static const DEPOSIT = '/deposit';
   static const PASSWORDCODE = '/passwordcode';
   static const PASSWORDEMAIL = '/passwordemail';
+  static const SPLASH = '/splash';
 }

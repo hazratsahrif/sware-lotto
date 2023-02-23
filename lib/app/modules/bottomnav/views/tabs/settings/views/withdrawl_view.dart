@@ -87,7 +87,9 @@ class WithdrawlView extends GetView<SettingsController> {
                     "account_number": accountController.text,
 
                   };
-                  await controller.withDrawApiResponse(data, ApiUrl.userwalletEndPoint);
+                  await controller.withDrawApiResponse(data, ApiUrl.userwithdrawEndPoint);
+                  withdrawController.text='';
+                  accountController.text='';
                 } else {
                   SnackBarUtils.showError("Please fill all the field!");
                 }

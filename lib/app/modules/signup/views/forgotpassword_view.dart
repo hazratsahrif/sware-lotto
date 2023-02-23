@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get/get.dart';
+import 'package:wallet/app/modules/signup/controllers/signup_controller.dart';
+import 'package:wallet/constant/api_url.dart';
 import 'package:wallet/constant/colors.dart';
 import 'package:wallet/utils/SnackBarUtils.dart';
 import 'package:wallet/widgets/MyTextField.dart';
 
-class ForgotpasswordView extends GetView {
+class ForgotpasswordView extends GetView<SignupController> {
    ForgotpasswordView({Key? key}) : super(key: key);
   TextEditingController passController = TextEditingController();
+  TextEditingController currentController = TextEditingController();
   TextEditingController conPassController = TextEditingController();
+  final controller = Get.put(SignupController());
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,6 +35,11 @@ class ForgotpasswordView extends GetView {
                   fit: BoxFit.fill,
                 )),
             Spacer(),
+            // MyTextField(hint: "Current Password", controller: currentController, valueChanged: (val){},
+            //   icons: Icons.key,
+            //   isObsecure: false,
+            //
+            // ),
             MyTextField(hint: "Password", controller: passController, valueChanged: (val){},
               icons: Icons.key,
               isObsecure: false,
@@ -47,14 +56,18 @@ class ForgotpasswordView extends GetView {
 
             Center(
               child: MaterialButton(onPressed: (){
-                if(passController.text.isNotEmpty || conPassController.text.isNotEmpty){
+                if(  passController.text.isNotEmpty && conPassController.text.isNotEmpty){
                   Map data=
                   {
-                    "old_password":"33867",
                     "password":passController.text,
                     "password_confirmation":conPassController.text
                   };
-                  controller.postResetPassword(data);
+                  controller.resetPasswordApiResponse(data, ApiUrl.changePasswordEndPoint);
+                  // passController.text='';
+                  conPassController.text='';
+                  currentController.text='';
+
+
 
                 }
                 else{

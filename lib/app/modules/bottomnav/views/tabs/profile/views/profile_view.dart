@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:wallet/app/routes/app_pages.dart';
 import 'package:wallet/constant/api_url.dart';
 import 'package:wallet/constant/colors.dart';
 import 'package:wallet/utils/DatePicker.dart';
@@ -24,14 +25,16 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     controller.img.value.path!="";
-    nameController.text = controller.userData.value.nickName ?? "";
-    birthController.text = controller.userData.value.dob ?? "";
-    bioController.text = controller.userData.value.bio ?? '';
     controller.onInit();
+    nameController.text = controller.userData!.value.nickName ?? "";
+    birthController.text = controller.userData!.value.dob ?? "";
+    bioController.text = controller.userData!.value.bio ?? '';
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
           elevation: 0,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,8 +48,12 @@ class ProfileView extends GetView<ProfileController> {
                   final storage = new FlutterSecureStorage();
                   Loading().showEasyLoading("loading...");
                   await storage.delete(key: "token");
-                  Loading().dismissEasyLoading();
-                  Get.back();
+                  String? token = await storage.read(key: 'token');
+                  if(token==null){
+                    Loading().dismissEasyLoading();
+                    Get.offNamed(Routes.LOGIN);
+                  }
+
                 },
                 child: Text(
                   "Logout",
@@ -84,10 +91,10 @@ class ProfileView extends GetView<ProfileController> {
                             ClipRRect(
                                 borderRadius: BorderRadius.circular(100),
                                 child: Image.file(File(controller.img.value.path),fit: BoxFit.cover,
-                                )):controller.userData.value.image.toString().isNotEmpty?
+                                )):controller.userData!.value.image.toString()==''?
                             ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Image.network("https://swer3lotto.com/storage/app/public/"+controller.userData.value.image.toString().replaceAll(RegExp(r'\\'),""),fit: BoxFit.cover,
+                                  child: Image.network(ApiUrl.imageBaseUser+controller.trimImage,fit: BoxFit.cover,
                                   )
                             ):
                             ClipRRect(
@@ -104,10 +111,10 @@ class ProfileView extends GetView<ProfileController> {
                         ),
                       ),
                     ),
-                    controller.userData.value.nickName!.isEmpty
+                    controller.userData!.value.nickName!.isEmpty
                         ? CircularProgressIndicator(color: MyColor.yellow)
                         : Text(
-                      controller.userData.value.nickName!,
+                      controller.userData!.value.nickName!,
                       style: TextStyle(
                           color: MyColor.yellow,
                           fontSize: 20,
@@ -115,7 +122,7 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     SizedBox(height: 70,),
                     ProfileTextField(
-                      title: controller.userData.value.nickName ?? "name",
+                      title: controller.userData!.value.nickName ?? "name",
                       suffixIcon: Icons.edit,
                       controller: nameController,
                       hintFontWeight: FontWeight.w800,
@@ -126,7 +133,7 @@ class ProfileView extends GetView<ProfileController> {
                       },
                     ),
                     ProfileTextField(
-                      title: controller.userData.value.dob ?? "null",
+                      title: controller.userData!.value.dob ?? "Pick your dob",
                       suffixIcon: Icons.calendar_month,
                       controller: birthController,
                       hintFontWeight: FontWeight.w800,

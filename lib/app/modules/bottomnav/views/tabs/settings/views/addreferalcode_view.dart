@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wallet/app/modules/bottomnav/views/tabs/settings/controllers/settings_controller.dart';
 import 'package:wallet/constant/api_url.dart';
+import 'package:wallet/utils/SnackBarUtils.dart';
 import 'package:wallet/widgets/PrimaryButton.dart';
 import 'package:wallet/widgets/ProfileTextField.dart';
 
@@ -70,10 +71,17 @@ class AddreferalcodeView extends GetView<SettingsController> {
                 SizedBox(height: MediaQuery.of(context).size.height * 0.08,),
 
                 PrimaryButton(title: "Add",onTab: (){
+                  if(controller.profileController.userData!.value.isReferer==1){
+                    SnackBarUtils.showError("You are already reffered");
+                  }
+                  else{
                   Map data = {
-                    "referral_code":controller.profileController.userData.value.referralCode!
+                    "referral_code":referelaController.text
                   };
                   controller.addReferalApiResponse(data, ApiUrl.addReferalEndPoint);
+                  referelaController.text='';
+                  }
+
 
 
                 },),
